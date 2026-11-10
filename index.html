@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#d8e8ef">
+<title>우리들의 미니홈피</title>
+<style>
+:root{--blue:#7da9bd;--deep:#416779;--paper:#fffdf7;--line:#c7d9df;--pink:#f6dfe5}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#dcebf0,#f6e9ed);font-family:Tahoma,"Apple SD Gothic Neo",sans-serif;color:#3e5661}
+.wrap{max-width:760px;margin:0 auto;padding:14px}
+.top{background:#fffdf7;border:2px solid #a8c4cf;border-radius:16px;padding:16px;box-shadow:0 5px 0 #b8ced5}
+.logo{font-weight:900;font-size:24px;letter-spacing:-1px;color:#426e82}.sub{font-size:12px;color:#78909a;margin-top:4px}
+.panel{background:#fffdf7;border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;box-shadow:0 3px 0 #d5e1e4}
+h2{font-size:16px;margin:0 0 10px;color:#426e82}
+input,textarea,button{font:inherit} input,textarea{width:100%;border:1px solid #bfd1d7;border-radius:9px;padding:11px;background:white;color:#344f5b}
+textarea{min-height:84px;resize:vertical}
+button{border:0;border-radius:9px;padding:10px 13px;background:#6f9caf;color:white;font-weight:700;cursor:pointer}
+button.secondary{background:#e8eff1;color:#486573;border:1px solid #c9d9de}
+button.pink{background:#d99eae}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}
+.small{font-size:12px;color:#718992;line-height:1.55}.status{padding:9px 11px;background:#edf5f7;border-radius:9px;font-size:13px;margin-top:8px}
+.hidden{display:none!important}.post{padding:10px 0;border-bottom:1px dashed #d3dfe2}.post:last-child{border:0}
+.meta{font-size:11px;color:#8a9da4;margin-bottom:5px}.post p{white-space:pre-wrap;margin:0;line-height:1.5;overflow-wrap:anywhere}
+.tag{display:inline-block;background:#f8e9ed;color:#a16b7b;border-radius:20px;padding:4px 8px;font-size:11px;margin-right:5px}
+hr{border:0;border-top:1px dashed #d3dfe2;margin:12px 0}
+footer{text-align:center;font-size:11px;color:#82979f;padding:18px}
+code{word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header class="top">
+  <div class="logo">♡ 우리들의 미니홈피</div>
+  <div class="sub">2000s 감성 · 둘만의 작은 공간</div>
+ </header>
+
+ <section class="panel">
+  <h2>1. 연결하기</h2>
+  <div class="small">회원가입 없이 두 기기를 직접 연결하는 시험용 버전이야. 한 명이 '방 만들기', 다른 한 명이 '초대 코드 붙여넣기'를 해. 연결 코드는 길 수 있어.</div>
+  <div class="row" style="margin-top:10px">
+   <button id="make">방 만들기</button>
+   <button class="secondary" id="join">초대 코드로 참여</button>
+  </div>
+  <div id="hostBox" class="hidden" style="margin-top:12px">
+   <div class="small">① 아래 초대 코드를 친구에게 보내 줘.</div>
+   <textarea id="offerOut" readonly></textarea>
+   <button class="secondary" id="copyOffer">초대 코드 복사</button>
+   <hr>
+   <div class="small">② 친구가 만든 응답 코드를 아래에 붙여넣고 연결하기.</div>
+   <textarea id="answerIn" placeholder="친구가 보낸 응답 코드를 붙여넣어"></textarea>
+   <button id="finish">연결 완료</button>
+  </div>
+  <div id="guestBox" class="hidden" style="margin-top:12px">
+   <div class="small">① 방 만든 친구에게 받은 초대 코드를 붙여넣어.</div>
+   <textarea id="offerIn" placeholder="초대 코드 붙여넣기"></textarea>
+   <button id="createAnswer">응답 코드 만들기</button>
+   <hr>
+   <div class="small">② 아래 응답 코드를 방 만든 친구에게 보내 줘.</div>
+   <textarea id="answerOut" readonly></textarea>
+   <button class="secondary" id="copyAnswer">응답 코드 복사</button>
+  </div>
+  <div id="connection" class="status">아직 연결되지 않았어.</div>
+ </section>
+
+ <section class="panel">
+  <h2>2. 미니홈피 설정</h2>
+  <div class="row">
+   <input id="nickname" maxlength="16" placeholder="내 별명 (예: 선규)">
+   <button id="saveName" class="secondary">별명 저장</button>
+  </div>
+  <div class="small" style="margin-top:7px">이 기기에서 설정한 별명은 상대에게도 표시돼.</div>
+ </section>
+
+ <section class="panel">
+  <h2>3. 다이어리</h2>
+  <textarea id="diaryText" maxlength="1000" placeholder="오늘의 기분이나 일상을 적어 봐."></textarea>
+  <div class="row" style="margin-top:8px">
+   <span class="small">둘이 함께 보는 다이어리</span>
+   <button id="postDiary">글 남기기</button>
+  </div>
+  <div id="diaryList"></div>
+ </section>
+
+ <section class="panel">
+  <h2>4. 방명록</h2>
+  <textarea id="guestText" maxlength="500" placeholder="친구에게 한마디 남기기"></textarea>
+  <div class="row" style="margin-top:8px">
+   <span class="small">서로에게 남기는 한마디</span>
+   <button class="pink" id="postGuest">방명록 쓰기</button>
+  </div>
+  <div id="guestList"></div>
+ </section>
+
+ <section class="panel">
+  <h2>알아둘 점</h2>
+  <div class="small">
+   • 이 버전은 중앙 서버 대신 WebRTC로 두 기기를 직접 연결하는 실험용이야.<br>
+   • 초대/응답 코드를 한 번 주고받아야 하고, 연결이 끊기거나 한쪽이 페이지를 닫으면 다시 연결해야 할 수 있어.<br>
+   • 두 기기가 서로 다른 네트워크에 있으면 연결이 실패할 수도 있어. 이 경우 안정적인 서버 호스팅이 필요해.<br>
+   • 글은 현재 연결된 동안 상대에게 실시간 전송돼. 서버에 영구 저장되는 서비스는 아니야.<br>
+   • 초대 코드는 비밀번호처럼 취급하고 다른 사람에게 공개하지 마.
+  </div>
+ </section>
+ <footer>우리들의 작은 추억 저장소 · mini homepy beta</footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let pc=null, channel=null, isHost=false;
+let diary=[], guests=[];
+const rtcConfig={iceServers:[{urls:"stun:stun.l.google.com:19302"}]};
+const setStatus=t=>$("connection").textContent=t;
+const enc=async obj=>btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+const dec=async str=>JSON.parse(decodeURIComponent(escape(atob(str.trim()))));
+function setupPeer(host){
+ isHost=host;
+ pc=new RTCPeerConnection(rtcConfig);
+ pc.oniceconnectionstatechange=()=>setStatus("연결 상태: "+pc.iceConnectionState);
+ pc.onconnectionstatechange=()=>setStatus("연결 상태: "+pc.connectionState);
+ pc.ondatachannel=e=>{channel=e.channel;setupChannel()};
+ if(host){channel=pc.createDataChannel("mini-homepy");setupChannel()}
+}
+function setupChannel(){
+ channel.onopen=()=>{setStatus("연결 성공! 이제 둘이 같이 쓸 수 있어 ♡");channel.send(JSON.stringify({type:"sync",diary,guests}))};
+ channel.onclose=()=>setStatus("연결이 끊겼어. 다시 연결해 줘.");
+ channel.onmessage=e=>{
+  try{const m=JSON.parse(e.data);
+   if(m.type==="sync"){diary=m.diary||[];guests=m.guests||[];render()}
+   if(m.type==="diary"){diary.unshift(m.item);render()}
+   if(m.type==="guest"){guests.unshift(m.item);render()}
+   if(m.type==="name"){/* nickname is shown on each new post */}
+  }catch(err){}
+ };
+}
+function broadcast(msg){if(channel&&channel.readyState==="open")channel.send(JSON.stringify(msg))}
+async function waitIce(){if(pc.iceGatheringState==="complete")return;await new Promise(resolve=>{const f=()=>{if(pc.iceGatheringState==="complete"){pc.removeEventListener("icegatheringstatechange",f);resolve()}};pc.addEventListener("icegatheringstatechange",f);setTimeout(resolve,12000)})}
+$("make").onclick=async()=>{
+ try{$("hostBox").classList.remove("hidden");$("guestBox").classList.add("hidden");setupPeer(true);
+ const offer=await pc.createOffer();await pc.setLocalDescription(offer);setStatus("초대 코드를 만드는 중...");
+ await waitIce();$("offerOut").value=await enc(pc.localDescription);setStatus("초대 코드가 준비됐어. 친구에게 보내 줘.");
+ }catch(e){setStatus("방을 만들지 못했어: "+e.message)}
+};
+$("join").onclick=()=>{$("guestBox").classList.remove("hidden");$("hostBox").classList.add("hidden")};
+$("createAnswer").onclick=async()=>{
+ try{setupPeer(false);const offer=await dec($("offerIn").value);await pc.setRemoteDescription(offer);
+ const answer=await pc.createAnswer();await pc.setLocalDescription(answer);setStatus("응답 코드를 만드는 중...");
+ await waitIce();$("answerOut").value=await enc(pc.localDescription);setStatus("응답 코드가 준비됐어. 방 만든 친구에게 보내 줘.");
+ }catch(e){setStatus("초대 코드를 확인해 줘: "+e.message)}
+};
+$("finish").onclick=async()=>{
+ try{const answer=await dec($("answerIn").value);await pc.setRemoteDescription(answer);setStatus("연결을 시도하고 있어...")}
+ catch(e){setStatus("응답 코드를 확인해 줘: "+e.message)}
+};
+$("copyOffer").onclick=()=>navigator.clipboard?.writeText($("offerOut").value).then(()=>setStatus("초대 코드 복사 완료"));
+$("copyAnswer").onclick=()=>navigator.clipboard?.writeText($("answerOut").value).then(()=>setStatus("응답 코드 복사 완료"));
+function name(){return $("nickname").value.trim()||"익명";}
+$("saveName").onclick=()=>{localStorage.setItem("mini-name",name());broadcast({type:"name",name:name()});setStatus("별명을 저장했어.")};
+$("nickname").value=localStorage.getItem("mini-name")||"";
+function render(){
+ $("diaryList").innerHTML=diary.map(x=>`<div class="post"><div class="meta"><span class="tag">DIARY</span>${esc(x.name)} · ${esc(x.time)}</div><p>${esc(x.text)}</p></div>`).join("")||'<div class="small">아직 다이어리가 없어. 첫 글을 남겨 봐!</div>';
+ $("guestList").innerHTML=guests.map(x=>`<div class="post"><div class="meta"><span class="tag">GUESTBOOK</span>${esc(x.name)} · ${esc(x.time)}</div><p>${esc(x.text)}</p></div>`).join("")||'<div class="small">방명록이 비어 있어. 첫 인사를 남겨 봐!</div>';
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("postDiary").onclick=()=>{const text=$("diaryText").value.trim();if(!text)return;const item={name:name(),text,time:new Date().toLocaleString("ko-KR")};diary.unshift(item);broadcast({type:"diary",item});$("diaryText").value="";render()};
+$("postGuest").onclick=()=>{const text=$("guestText").value.trim();if(!text)return;const item={name:name(),text,time:new Date().toLocaleString("ko-KR")};guests.unshift(item);broadcast({type:"guest",item});$("guestText").value="";render()};
+render();
+</script>
+</body>
+</html>
